@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "nick-site-web"
+  },
+  "targets": {
+    "nick-site-web": {
+      "hosting": {
+        "nick-site": [
+          "nick-site-web"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
