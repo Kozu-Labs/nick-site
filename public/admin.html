@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Contact Submissions</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050505;
+      --surface: #0A0A0C;
+      --violet: #623CEA;
+      --violet-light: #A78BFA;
+      --white: #FFFFFF;
+      --text: #E8E8E8;
+      --text-muted: #808080;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
+      --font: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== LOGIN ===== */
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .login-box p {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 16px;
+      text-align: center;
+      letter-spacing: 0.1em;
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .login-box input:focus {
+      border-color: var(--violet);
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 14px;
+      background: var(--violet);
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .login-box button:hover { background: #7350f0; }
+
+    .login-error {
+      color: #E5484D;
+      font-size: 14px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ===== DASHBOARD ===== */
+    .dashboard { display: none; }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px clamp(20px, 5vw, 48px);
+      border-bottom: 1px solid var(--border);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .dash-header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .dash-header .back-link {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .dash-header .back-link:hover { color: var(--white); }
+
+    .dash-stats {
+      display: flex;
+      gap: 16px;
+      padding: 32px clamp(20px, 5vw, 48px);
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .dash-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      min-width: 140px;
+    }
+
+    .dash-stat .num {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .dash-stat .label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .submissions-list {
+      padding: 0 clamp(20px, 5vw, 48px) 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .submission {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 12px;
+      transition: border-color 0.3s ease;
+    }
+
+    .submission:hover { border-color: var(--border-hover); }
+
+    .submission.unread { border-left: 3px solid var(--violet); }
+
+    .sub-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sub-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .sub-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sub-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(98, 60, 234, 0.12);
+      color: var(--violet-light);
+      text-transform: capitalize;
+    }
+
+    .sub-date {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .sub-contact {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .sub-contact a, .sub-contact span {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .sub-contact a:hover { color: var(--violet-light); }
+
+    .sub-message {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-muted);
+      font-size: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .login-box { padding: 32px 24px; }
+      .dash-stats { flex-direction: column; }
+      .sub-header { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h1>Admin Access</h1>
+      <p>Enter the admin password to view submissions.</p>
+      <form id="loginForm">
+        <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+        <button type="submit">Unlock</button>
+      </form>
+      <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboard">
+    <div class="dash-header">
+      <h1>Contact Submissions</h1>
+      <a href="/" class="back-link">&larr; Back to site</a>
+    </div>
+    <div class="dash-stats" id="dashStats"></div>
+    <div class="submissions-list" id="submissionsList">
+      <div class="empty-state">Loading submissions...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js';
+    import { getFirestore, collection, query, orderBy, getDocs, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+
+    const app = initializeApp({
+      apiKey: "AIzaSyDfXN_rGkQH9vGWIjSv20ovlpirVbN7Fqo",
+      authDomain: "nick-site-web.firebaseapp.com",
+      projectId: "nick-site-web",
+      storageBucket: "nick-site-web.firebasestorage.app",
+      messagingSenderId: "1052323036503",
+      appId: "1:1052323036503:web:6a46b79d7af23aa91e9212"
+    });
+
+    const db = getFirestore(app);
+    const PASSWORD = 'CCQA';
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const pw = document.getElementById('passwordInput').value;
+      if (pw === PASSWORD) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadSubmissions();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('passwordInput').focus();
+      }
+    });
+
+    async function loadSubmissions() {
+      const list = document.getElementById('submissionsList');
+      const stats = document.getElementById('dashStats');
+
+      try {
+        const q = query(collection(db, 'submissions'), orderBy('createdAt', 'desc'));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          list.innerHTML = '<div class="empty-state">No submissions yet.</div>';
+          stats.innerHTML = `
+            <div class="dash-stat"><div class="num">0</div><div class="label">Total</div></div>
+          `;
+          return;
+        }
+
+        const submissions = [];
+        let unreadCount = 0;
+        const typeCounts = {};
+
+        snapshot.forEach(d => {
+          const data = { id: d.id, ...d.data() };
+          submissions.push(data);
+          if (!data.read) unreadCount++;
+          const t = data.type || 'unknown';
+          typeCounts[t] = (typeCounts[t] || 0) + 1;
+        });
+
+        // Stats
+        stats.innerHTML = `
+          <div class="dash-stat"><div class="num">${submissions.length}</div><div class="label">Total</div></div>
+          <div class="dash-stat"><div class="num">${unreadCount}</div><div class="label">Unread</div></div>
+          ${Object.entries(typeCounts).map(([k, v]) =>
+            `<div class="dash-stat"><div class="num">${v}</div><div class="label">${k.replace('-', ' ')}</div></div>`
+          ).join('')}
+        `;
+
+        // Render submissions
+        list.innerHTML = submissions.map(s => {
+          const date = s.createdAt ? new Date(s.createdAt.seconds * 1000).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          }) : 'Pending...';
+
+          return `
+            <div class="submission ${s.read ? '' : 'unread'}" data-id="${s.id}">
+              <div class="sub-header">
+                <div class="sub-name">${esc(s.name)}</div>
+                <div class="sub-meta">
+                  ${s.type ? `<span class="sub-badge">${esc(s.type.replace('-', ' '))}</span>` : ''}
+                  <span class="sub-date">${date}</span>
+                </div>
+              </div>
+              <div class="sub-contact">
+                <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>
+                ${s.phone ? `<span>${esc(s.phone)}</span>` : ''}
+              </div>
+              <div class="sub-message">${esc(s.message)}</div>
+            </div>
+          `;
+        }).join('');
+
+        // Mark unread as read
+        for (const s of submissions) {
+          if (!s.read) {
+            await updateDoc(doc(db, 'submissions', s.id), { read: true });
+          }
+        }
+
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = '<div class="empty-state">Error loading submissions. Check Firestore setup.</div>';
+      }
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+  </script>
+
+</body>
+</html>
