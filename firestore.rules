@@ -1,18 +1,91 @@
 rules_version = '2';
 
+// Lockdown rules. Client-side access is closed by default.
+// All writes to /submissions and /cases happen via Cloud Functions
+// (Admin SDK), which bypass these rules.
+//
+// History:
+//   - Pre-2026-04-29: /submissions had `allow read, update: if true` —
+//     every contact-form submission was publicly readable. Closed here.
+//   - 2026-04-29: locked down ahead of A.2 contact-form rewrite + A.4
+//     defendant portal stand-up.
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Contact-form submissions — Cloud Function only.
+    // The browser no longer writes here directly; submitContact (A.2)
+    // validates + rate-limits + tees via Admin SDK.
     match /submissions/{submission} {
-      // Anyone can create a submission (contact form)
-      allow create: if true;
-      // Read and update allowed (for admin dashboard - client-side auth)
-      allow read, update: if true;
-      // No deletes from client
-      allow delete: if false;
+      allow read, write: if false;
     }
-    // Block everything else
+
+    // Defendant portal data (provisioned in A.4 / A.5).
+    // Each defendant's session has a custom token claim {case_id, email}.
+    // Server-enforced isolation: defendants can only read their own
+    // case's data; firm admins can read everything.
+    match /cases/{caseId} {
+      allow read: if isFirmAdmin()
+                  || request.auth.token.case_id == caseId;
+      allow write: if false;  // portal_publish writes via Admin SDK
+
+      match /dockets/{entryKey} {
+        allow read: if isFirmAdmin()
+                    || request.auth.token.case_id == caseId;
+        allow write: if false;
+      }
+
+      match /defendants/{schedNo} {
+        // Defendant sees only their own row (matched by email claim).
+        allow read: if isFirmAdmin()
+                    || (request.auth.token.case_id == caseId
+                        && request.auth.token.email == resource.data.email);
+        allow write: if false;
+
+        // Audit log (A.4.1) — append-only, firm-only readable.
+        // Defendants cannot read their own access log.
+        match /access_log/{eventId} {
+          allow read: if isFirmAdmin();
+          allow write: if false;  // portalLogin/Event/Download write via Admin SDK
+        }
+
+        // Defendant-attorney email events (B.7) — firm-only.
+        match /events/{eventId} {
+          allow read: if isFirmAdmin();
+          allow write: if false;
+        }
+      }
+
+      // Per-case ECF receipt log (B.3) — firm-only.
+      match /ecf_receipts/{entryKey} {
+        allow read: if isFirmAdmin();
+        allow write: if false;
+      }
+
+      // Per-case sync_state (B.7) — firm-only.
+      match /sync_state/{stateDoc} {
+        allow read: if isFirmAdmin();
+        allow write: if false;
+      }
+    }
+
+    // Active-case registry (B.1) — firm-only.
+    match /firm/{doc} {
+      allow read: if isFirmAdmin();
+      allow write: if false;
+    }
+
+    // Default deny.
     match /{document=**} {
       allow read, write: if false;
     }
   }
+}
+
+// Firm admins (Nick + Alan) authenticate via Firebase Auth and carry
+// a custom claim `role: 'firm_admin'` set server-side. Defendants do
+// NOT carry this claim.
+function isFirmAdmin() {
+  return request.auth != null
+         && request.auth.token.role == 'firm_admin';
 }
