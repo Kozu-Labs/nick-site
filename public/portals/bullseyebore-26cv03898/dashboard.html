@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Case Portal — The Law Office of Nicholas Lee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/portal.css">
+  <meta name="portal-case-id" content="26cv03898">
+</head>
+<body class="portal portal-dashboard">
+  <header class="dash-header">
+    <div class="brand-row">
+      <a class="brand" href="https://nslegal-ip.com/">The Law Office of Nicholas Lee</a>
+      <button id="logoutBtn" class="btn-ghost">Sign out</button>
+    </div>
+    <h1 id="caseCaption">Loading…</h1>
+    <div class="case-meta">
+      <span><span class="label">Case No.</span> <span id="caseNumber">—</span></span>
+      <span><span class="label">Court</span> N.D. Ill., Eastern Division</span>
+      <span><span class="label">Judge</span> <span id="caseJudge">—</span></span>
+      <span><span class="label">Filed</span> <span id="caseFiled">—</span></span>
+    </div>
+  </header>
+
+  <main class="dash-grid">
+    <section class="card span-2" id="defendantCard" hidden>
+      <h2>Your status in this case</h2>
+      <div class="kv">
+        <div><span class="label">Schedule A #</span> <span id="defNo">—</span></div>
+        <div><span class="label">Listed as</span> <span id="defMerchant">—</span></div>
+        <div><span class="label">Current status</span> <span id="defStatus" class="badge">—</span></div>
+        <div id="defLastActionRow" hidden><span class="label">Last action</span> <span id="defLastAction">—</span></div>
+      </div>
+      <p id="defLatestSummary" class="subtle"></p>
+    </section>
+
+    <section class="card span-2">
+      <h2>Docket</h2>
+      <p class="subtle">Public filings in this case. Click a row to download the PDF (downloads are recorded for the service-of-process record).</p>
+      <div id="docketTable" class="docket">Loading…</div>
+    </section>
+
+    <section class="card span-2">
+      <h2>Need to respond?</h2>
+      <p>To file a response in this case, contact plaintiff's counsel directly:</p>
+      <p>
+        <strong>Nicholas S. Lee, Esq.</strong><br>
+        332 S. Michigan Ave., Suite 900<br>
+        Chicago, IL 60604<br>
+        <a href="mailto:nslee@nslegal-ip.com">nslee@nslegal-ip.com</a> · (224) 360-3293
+      </p>
+      <p class="subtle">
+        This portal is a service-of-process record only. It is not legal advice and does
+        not establish an attorney-client relationship. If you wish to defend this case,
+        consult your own attorney.
+      </p>
+    </section>
+  </main>
+
+  <footer class="legal">
+    Access to this site is recorded under the Court's alternative-service order.
+    Session ID: <code id="sessionRef">—</code> · <a href="./terms.html">Terms of Use</a>
+  </footer>
+
+  <script src="./js/portal.js" defer></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => Portal.bindDashboard());
+  </script>
+</body>
+</html>

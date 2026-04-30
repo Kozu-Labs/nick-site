@@ -1,14 +1,12 @@
 /**
  * Cloud Functions for nslegal-ip.com
  *
- * submitContact (A.2)
- *   HTTPS endpoint that accepts contact-form submissions, validates them,
- *   rate-limits per IP, posts to Slack #nick-firm, and tees to Firestore.
- *
- * Replaces the prior browser-direct Firestore write path which leaked
- * every submission publicly (closed in A.1 / firestore.rules).
- *
- * Future home of: portalLogin, portalEvent, portalDownload (A.4 / A.4.1).
+ * submitContact   (A.2) — contact form → Slack #nick-firm + Firestore tee
+ * portalLogin     (A.4) — defendant login (bcrypt + signed-cookie session)
+ * portalData      (A.4) — return case + dockets + this defendant's row
+ * portalDownload  (A.4) — gated PDF download (signed Storage URL + audit log)
+ * portalEvent     (A.4.1) — frontend logs view events for the audit trail
+ * portalLogout    (A.4) — clear session cookie + log session_end
  */
 
 const { onRequest } = require('firebase-functions/v2/https');
@@ -21,6 +19,14 @@ admin.initializeApp();
 const db = admin.firestore();
 
 setGlobalOptions({ region: 'us-central1', maxInstances: 10 });
+
+// Re-export the portal handlers (they require admin.initializeApp first).
+const portal = require('./portal');
+exports.portalLogin = portal.portalLogin;
+exports.portalData = portal.portalData;
+exports.portalDownload = portal.portalDownload;
+exports.portalEvent = portal.portalEvent;
+exports.portalLogout = portal.portalLogout;
 
 const SLACK_LEADS_WEBHOOK = defineSecret('SLACK_LEADS_WEBHOOK');
 

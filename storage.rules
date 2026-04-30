@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// All client access denied. Portal PDFs are served via Cloud Functions
+// (portalDownload) which use the Admin SDK to mint short-lived signed URLs.
+// Direct fetches to gs://.../cases/{caseId}/pdfs/* return 403.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

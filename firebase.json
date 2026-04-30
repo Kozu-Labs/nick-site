@@ -10,17 +10,19 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
-      {
-        "source": "/api/submitContact",
-        "function": {
-          "functionId": "submitContact",
-          "region": "us-central1"
-        }
-      }
+      { "source": "/api/submitContact",  "function": { "functionId": "submitContact",  "region": "us-central1" } },
+      { "source": "/api/portal/login",    "function": { "functionId": "portalLogin",    "region": "us-central1" } },
+      { "source": "/api/portal/data",     "function": { "functionId": "portalData",     "region": "us-central1" } },
+      { "source": "/api/portal/download", "function": { "functionId": "portalDownload", "region": "us-central1" } },
+      { "source": "/api/portal/event",    "function": { "functionId": "portalEvent",    "region": "us-central1" } },
+      { "source": "/api/portal/logout",   "function": { "functionId": "portalLogout",   "region": "us-central1" } }
     ]
   },
   "firestore": {
     "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
   },
   "functions": [
     {
