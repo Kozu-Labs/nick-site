@@ -38,6 +38,12 @@ The umbrella initiative is **Nick's Law Firm AI** — using AI to make a small I
    │     Live portals:
    │       - Bullseyebore: nslegal-ip.com/portals/bullseyebore-26cv03898/
    │         (24 defendants, 21 public PDFs, audit-logged)
+   │     ⚠️ STATIC SNAPSHOT for now: portal is frozen at 2026-04-30 ~16:00.
+   │        New ECF entries / new Clio uploads do NOT flow through automatically.
+   │        Auto-update needs A.5 (portal_publish skill) + B.1/B.2 (active-case
+   │        registry + launchd cascade). To update manually before that ships:
+   │        re-run provision_portal.js — but this rotates the password too
+   │        (v2 fix needed: --keep-password flag).
    │
    ├── sarah-cloud (firm operations bot)
    │     Live:       Render service srv-d7gq5p8sfn5c73e0m4q0
