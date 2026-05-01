@@ -1,105 +1,246 @@
-# nick-site Session Memory
+# Nick Lee Legal — Firm AI Memory (`NS.md`)
 
-> Personal disk memory file for the `nick-site` project (this Mac only).
-> Mirror lives at `nick-site/MEMORY/NS.md` (git-versioned, syncs across Macs).
-> Reverse-chronological — newest at top.
-
-## Session: 2026-04-30 — Bullseyebore portal v1 SHIPPED ✅
-
-### URL + creds (one-time — record this!)
-- Portal URL: **https://nslegal-ip.com/portals/bullseyebore-26cv03898/**
-- Password (defendants log in with this + their email): **`c69sUi3JSEDTwzfY`**
-- Defendants: 24 (from `_defendants/defendants.json` `primary_email` field)
-- Public PDFs: 21 / 22 docket entries (Schedule A Ex 4 excluded)
-- Audit log: per-defendant subcollection at `/cases/26cv03898/defendants/{schedNo}/access_log/*`
-
-### What was built (A.4 + A.4.1 + A.6)
-- `functions/portal.js` — 5 Cloud Functions (portalLogin, portalData, portalDownload, portalEvent, portalLogout). HMAC-signed JWT in `__session` cookie (Firebase Hosting CDN strips all cookies except `__session`). bcrypt password verification. Per-IP + per-email rate limit on login (5/hour, 10/day). Audit log on every event.
-- `firebase.json` — added 5 new Hosting rewrites (`/api/portal/*` → respective functions).
-- `storage.rules` — NEW, deny-all client access (PDF reads gated through portalDownload).
-- `public/portals/_template/` — login.html + dashboard.html + terms.html + portal.css + portal.js (brand-matched dark/violet/Manrope).
-- `public/portals/bullseyebore-26cv03898/` — provisioned copy with case-specific tokens substituted.
-- `Nick Law Firm AI/_reference/scripts/provision_portal.js` — one-off Node script that becomes the basis for portal_publish skill (A.5). Reads STATUS.md + defendants.json + Dkt_renamed manifest, generates password, bcrypts, writes Firestore + uploads PDFs to `gs://nick-site-web-portal/cases/{caseId}/pdfs/`.
-
-### Infrastructure decisions made
-- Bucket name: `nick-site-web-portal` (not `*.firebasestorage.app` — that domain is Firebase-managed; can't create directly. Custom-named bucket works fine via Admin SDK).
-- Service account for provisioning: `portal-provisioner@nick-site-web.iam.gserviceaccount.com`. Roles: `roles/datastore.user` + `roles/storage.objectAdmin`. Key file at `~/.config/nick-firm-portal-provisioner.json` (mode 600, gitignored).
-- Cloud Run runtime SA needed `roles/iam.serviceAccountTokenCreator` on itself (for getSignedUrl signBlob calls). Granted.
-- Cookie name: **`__session`** (not `portal_session`) — Firebase Hosting CDN strips all cookies except this one.
-
-### Smoke tests passed (7 gates)
-1. Login page loads + template vars substituted (case caption, case number, case ID).
-2. Wrong password → 401 invalid_credentials, fail logged.
-3. Email not in allowlist → 401 invalid_credentials, fail logged.
-4. Valid login → 200 ok=true, __session cookie set with case_id + email + sessionId + schedNo claims.
-5. /api/portal/data with cookie → 200 with case info + this defendant's row + 22 dockets (21 public + 1 private).
-6. /api/portal/download?doc=001 → 302 to signed Cloud Storage URL, fetch returns 192,358 bytes (matches Complaint PDF size in manifest).
-7. /api/portal/download?doc=001-04 (Schedule A) → 403 doc_not_available (correctly excluded).
-8. Logout → 200, cookie cleared, subsequent /data → 401 unauthenticated.
-9. Audit log: 13 entries captured for defendant #001 across the test session (login_success x5, login_failure x1, dashboard_view x2, doc_download x2, logout x1).
-
-### Known v1 limitations / iterate-on items
-- **Password regenerates each provisioning run** — bug for v2 (should be idempotent unless --rotate flag passed).
-- **No password reset / change** — defendant who loses the password has to email Nick.
-- **No mobile-specific UX testing yet** — desktop-tested only.
-- **Audit log is firm-readable only via Admin SDK** — no portal_audit skill yet (A.4.2 deferred).
-- **No "what's new since I last logged in" surfacing** — defendant sees full docket each time.
-- **No filtering of per-defendant data leakage in dockets** — dockets are case-level (which is correct for v1; per-defendant data exposure rule applies to defendants subcollection only).
-
-## Deploy: 2026-04-30 13:40 — `2fbf578`
-
-## Session: 2026-04-30 — A.2 contact-form pipeline ✅ shipped end-to-end
-- `npm install` in `functions/` (181 packages: firebase-admin 12, firebase-functions 6).
-- `firebase functions:secrets:set SLACK_LEADS_WEBHOOK` via temp file (no shell-history leak). Stored as Secret Manager v1.
-- `firebase deploy --only functions` — first attempt failed on Cloud Build IAM propagation (Blaze first-deploy issue); second attempt 30s later succeeded. Fn URL: `https://submitcontact-wlbk2rhpqq-uc.a.run.app`.
-- `firebase functions:artifacts:setpolicy --force` — auto-deletes container images >1d old. Prevents the AR-bloat trap that hit CopyCatch.
-- `gcloud run services add-iam-policy-binding ... --member=allUsers --role=roles/run.invoker` — required for public hosting-rewrite invocation. Default Cloud Run service is private; Hosting rewrite needs allUsers invoker.
-- End-to-end verified: valid submission lands in `#nick-firm` (channel C0AQKA2KZV4) within seconds with full payload + IP + timestamp; Firestore tee returns doc IDs.
-- Validation verified: bad email → 400 with details; honeypot → 200 silent (no Slack post, no Firestore tee).
-- Rate limit verified: 5 successful submissions from same IP, 6th returned `HTTP 429 Retry-After: 3537` with JSON body `{error: rate_limited, retry_after_seconds: 3537}`.
-
-## Deploy: 2026-04-30 13:40 — `2fbf578`
-- Hosting deployed: https://nick-site-web.web.app
-- Frank-pattern infra now live in repo + production
-- Functions deploy pending A.2 webhook URL
-
-## Session: 2026-04-30 — Frank-pattern session-management infra ✅
-- Created `~/NS.md` + `nick-site/MEMORY/NS.md` (this dual-memory pattern).
-- Upgraded `.claude/commands/deploy.md` to use `~/NS.md` (was `CLAUDE.md`); added explicit allowed-tools and exclusion list (`public/blog/`, `functions/node_modules/`).
-- Added `.claude/hooks/on-stop-deploy.sh` — auto-runs deploy protocol on Claude Code Stop event. Includes loop-prevention (`stop_hook_active`), early-exit on no-changes, stash/pull-rebase/pop, source-only commit, push-before-deploy, post-deploy `~/NS.md` append.
-- Added `.claude/settings.local.json` — registers the Stop hook + pre-allows ~25 routine git/firebase/curl commands.
-- Made hook executable (`chmod +x`).
-
-## Project state at a glance
-- **Repo**: `Kozu-Labs/nick-site` (GitHub)
-- **Firebase project**: `nick-site-web` (Blaze plan, upgraded 2026-04-30)
-- **Live URLs**: https://nick-site-web.web.app · https://nslegal-ip.com (planned, A.3)
-- **Deploy command**: `firebase deploy --only hosting`
-- **Branch**: `main` (rebase, never merge)
-
-## Session: 2026-04-30 — A.1 lockdown + A.2 contact-form rewrite (in progress)
-
-### A.1 — Lockdown ✅ shipped
-- Tightened `firestore.rules`: `/submissions` denies all client reads/writes; pre-staged `/cases/**` portal data behind `case_id + email + firm_admin` claims; default-deny everywhere else.
-- Deployed rules: `firebase deploy --only firestore:rules` → verified unauth `curl` to submissions REST returns 403 PERMISSION_DENIED.
-- Deleted `public/admin.html` (had `const PASSWORD = 'CCQA';` hardcoded — anyone could authenticate). Live `nick-site-web.web.app/admin.html` now 404.
-- Committed [22af706]: "Lock down Firestore + remove insecure admin page".
-
-### A.2 — Contact form → Slack `#nick-firm` (paused, awaiting webhook URL)
-- Built `functions/index.js` — `submitContact` HTTPS endpoint with validation, honeypot, per-IP rate limit (5/hour), Slack webhook POST, Firestore tee.
-- Updated `firebase.json` — added `functions` codebase + Hosting rewrite `/api/submitContact` → function.
-- Edited `public/index.html` — replaced `addDoc(...)` with `fetch('/api/submitContact')`; added off-screen honeypot input.
-- **Pending**: Alan to (a) create Slack incoming webhook for `#nick-firm`, (b) paste URL.
-- **Pending**: `npm install` in `functions/`, `firebase functions:secrets:set SLACK_LEADS_WEBHOOK`, deploy.
-
-### Manual hand-offs to Alan
-- Rotate `FIREBASE_SERVICE_ACCOUNT` GitHub secret (Firebase IAM → generate new key → update GitHub Secrets → revoke old).
-- Optionally back up `submissions` collection from Firebase Console before any further changes.
-
-## Conventions established
-- **Never deploy before pushing.** GitHub is source of truth; production is one consumer.
-- **Never commit local-only modifications outside the current task scope.** `public/index.html` and `public/nick.png` had pre-existing local-only edits; left alone.
-- **Untracked files in repo** (`.github/`, `blog-content/`, `build-blog.py`, `public/css/`, `public/images/`) — were never pushed to remote. Separate cleanup task to either commit or formally retire.
-- **Firebase tooling**: `firebase --version` is 15.7.0; `gcloud` is installed (566.0.0); auth as `alan@kozulabs.com`.
+> **Refresh prompt:**
+> "Refresh from `~/NS.md` and pick up the todo list from last session."
+>
+> This is the unified memory file for everything Alan + Nick are building together
+> on the firm-AI initiative — engineering, tools, deployments, and open work.
+>
+> **Where this file lives:** `Nick Lawfirm AI/NS.md` (iCloud-synced; both Macs see it).
+> `~/NS.md` is a symlink to here.
+> `nick-site/MEMORY/NS.md` is a git-committed snapshot for repo versioning.
+>
+> Reverse-chronological for session log; newest at top.
 
 ---
+
+## 0. Reading order on session start
+
+1. Read this file (§ 1 + § 2 + most-recent § 4 entry are usually enough).
+2. If a specific case is in scope, also read `Clients/{Client}/STATUS.md`.
+3. If drafting / generating a filing, also read `RULES.md` + relevant Draft Plan in `{case}/_draft_plans/`.
+4. The pointers in § 5 tell you which deep file to consult for what.
+
+---
+
+## 1. Project map (mid-2026)
+
+The umbrella initiative is **Nick's Law Firm AI** — using AI to make a small IP-litigation firm operate like a much bigger one.
+
+```
+   Nick's Law Firm AI (umbrella)
+   │
+   ├── nick-site (marketing site + per-case defendant portals)
+   │     URL:        https://nslegal-ip.com/  (Firebase Hosting)
+   │     Repo:       github.com/Kozu-Labs/nick-site
+   │     Functions:  submitContact, portalLogin, portalData,
+   │                 portalDownload, portalEvent, portalLogout
+   │     Live portals:
+   │       - Bullseyebore: nslegal-ip.com/portals/bullseyebore-26cv03898/
+   │         (24 defendants, 21 public PDFs, audit-logged)
+   │
+   ├── sarah-cloud (firm operations bot)
+   │     Live:       Render service srv-d7gq5p8sfn5c73e0m4q0
+   │     Repo:       github.com/aldizzle/sarah-cloud
+   │     Function:   polls admin@nslegal-ip.com via Microsoft Graph every 2 min,
+   │                 parses ECF docket emails, posts structured messages to
+   │                 Slack #nick-firm channel
+   │     Phase:      1 done (email→Slack). 2 in roadmap (interactive @Sarah).
+   │     Cost:       $7/mo Render Starter
+   │
+   ├── case_manager (lawfirm action board)
+   │     Lives in:   Nick Law Firm AI/_reference/skills/case_manager/
+   │     Output:     Slack canvas pinned in #nick-firm + per-run markdown
+   │                 to Nick Law Firm AI/_workflow_runs/
+   │     Refresh:    bash Nick Law Firm AI/_reference/web_dashboard/refresh_canvas.sh
+   │                 (manual today; auto-refresh planned in B.4)
+   │
+   ├── Other workspace skills (drafting pipeline)
+   │     sync_clio · update_kb · draft_document · audit · upload_to_clio ·
+   │     notify_defendants
+   │     See WORKFLOW.md for the pipeline diagram.
+   │
+   └── CopyCatch (now: lead-gen marketing channel only)
+         URL:        copycatch.ai (separate Firebase project genuine-haiku-426519-u5)
+         Repo:       Kozu-Labs/copycatch-landing-11.3.25 (frontend only)
+         Status:     Backend services (13 Cloud Run containers) deprecated;
+                     site stays live as a marketing funnel routing prospective
+                     IP-enforcement cases to Nick.
+         Cost:       ~$30/mo currently. Backlog: clean up to ~$0 (see § 2).
+```
+
+---
+
+## 2. Active todos (carry across sessions)
+
+Use GFM checkboxes. Open `[ ]` carries forward; closed `[x]` is history.
+
+### nick-site / portal
+
+- [x] A.1 Lockdown (firestore.rules + delete admin.html + rotate SA)
+- [x] A.2 Contact form → Slack #nick-firm via Cloud Function (rate-limited, honeypot)
+- [x] A.3 Custom domain `nslegal-ip.com` wired (was already done by Frank)
+- [x] A.4 Portal architecture (5 Cloud Functions + audit log + brand-matched UI)
+- [x] A.4.1 Audit log layer (login/view/download events to per-defendant subcollection)
+- [x] A.6 Bullseyebore portal v1 SHIPPED at nslegal-ip.com/portals/bullseyebore-26cv03898/
+- [ ] A.5 Codify what worked into `portal_publish` workspace skill (sibling to notify_defendants)
+- [ ] A.4.2 `portal_audit` skill — generate per-defendant service-of-process reports
+- [ ] Portal v2: `--keep-password` flag on provisioner (idempotent re-runs)
+- [ ] Portal v2: mobile UX testing
+- [ ] Portal v2: per-defendant Schedule A snippet (extract one row from Ex 4 PDF) — replace "no document attached" with "Your row in Schedule A"
+- [ ] Portal v2: fix the JS+HTML provisioner bugs we band-aided in A.6 (templates have absolute-path patches that don't substitute __SLUG__ yet — re-applies needed for next case provisioned)
+
+### sarah-cloud / docket-driven cascade
+
+- [ ] B.1 Active-case registry (`Nick Lawfirm AI/_active_cases.json` + Firestore mirror + activate/deactivate CLI)
+- [ ] B.2 Mac-side launchd auto-poll cascade (sync_clio → emit-json → push → portal_publish per active case)
+- [ ] B.3 Cloud-side ECF receipt log in Firestore (per-case ecf_receipts subcollection)
+- [ ] B.4 Canvas auto-refresh (V1_SPEC P0.3/P0.7/P0.9) — Mac→Sarah cases.json push + 8am cron + ECF-event-driven
+- [ ] B.5 Cloud-side gap-detection alerts (Sarah hourly diffs ECF receipts vs Clio inventory)
+- [ ] B.6 case_manager extended as orchestrator (`--cascade` flag; action board surfaces sync_state)
+- [ ] B.7 Universal admin@ email triage (defendant-attorney + client + platform-legal classification via Claude API)
+- [ ] B.8 (DEFERRED) Sarah doc1/-link safety net for missed PDFs
+
+### CopyCatch (lead-gen, cost optimization)
+
+- [ ] Tier 1: `gcloud run services update copycatch-scan --min-instances=0` → ~$13/mo savings
+- [ ] Tier 2: AR lifecycle policy (keep latest only) → ~$2.50/mo savings
+- [ ] Tier 3: empty `run-sources-*` and `gcf-v2-sources-*` storage buckets → ~$0.30/mo savings
+- [ ] Optional: Cloudflare in front of copycatch.ai → cuts Hosting bandwidth ~$14/mo to near-zero (~30-min separate task)
+
+### Lawfirm workspace
+
+- [ ] Update CLAUDE.md WORKSPACE SKILLS list to include `portal_publish` + `portal_audit` once shipped
+- [ ] Update WORKFLOW.md pipeline diagram to show portal_publish as a downstream sink
+- [ ] Polish judge-extraction regex in `_reference/scripts/analyze_admin_inbox.py` (currently 0 matches; needs to read `body.content` not just `bodyPreview`)
+
+### Security / hygiene
+
+- [ ] Rotate Slack incoming-webhook URL (was pasted in chat 2026-04-30 + 2026-05-01)
+- [ ] Rotate Render API key (was pasted in chat 2026-04-30; new one rotated 2026-04-30, but new key also in chat now)
+- [ ] Decide on Render API key permanent home (currently in `sarah-cloud/.env`, gitignored)
+
+### Loose ends from this session
+
+- [ ] Walmart Legal email at admin@ (4/27 20:00 — RE: TRO / DO - BULLSEYEBORE) — flag to Nick if he hasn't seen
+- [ ] Optional: clean up the 5 "RateLimit Test" leads in #nick-firm (or leave; harmless)
+
+---
+
+## 3. Conventions established (hard rules)
+
+These are decisions the team has made; respect them across sessions.
+
+### Engineering
+
+- **Never deploy before pushing.** GitHub is source of truth. Always `git push` before any `firebase deploy` / Render deploy.
+- **Never commit build output.** `public/blog/` (regenerated by build-blog.py), `functions/node_modules/`, `.firebase/`, etc. stay out of commits.
+- **Always rebase, never merge.** `git pull --rebase origin main`.
+- **Cookie name in Firebase Hosting projects MUST be `__session`.** All other cookies are stripped by the CDN. (Bit us in A.4.)
+- **Firebase project IDs are immutable.** Display names can change; the underlying ID stays. Don't try to "rename" projects — migration is the only real option.
+- **Cloud Run min-instances=0 by default.** `=1` means always-on $10-15/mo per service. Reserve for cases where cold-start truly matters.
+- **Set $5/mo budget alerts on every Firebase project.** Paranoid floor; never expected to fire at our scale.
+- **Service accounts get only what they need.** Provisioner SA: Firestore + Storage write. Function runtime SA: signBlob role for signed URLs.
+- **Secrets via Secret Manager, never in code or env files committed to git.** `firebase functions:secrets:set` reads from `--data-file` to avoid shell-history leaks.
+
+### Provisioning
+
+- **Schedule A (Ex. 4) is excluded from per-defendant exposure.** Same rule `notify_defendants` v1.1 enforces. Defendants should never see other defendants' identities.
+- **Audit log is append-only and firm-only readable.** Defendants cannot read their own access log.
+- **Portal activation trigger = motion for alternative service GRANTED.** Don't pre-provision portals; provision per case as alt service lands. Same rule `notify_defendants` enforces.
+
+### Workflow
+
+- **Workspace files live in iCloud** (`Nick Lawfirm AI/`); cross-Mac sync handled there. `nick-site/` is git-versioned (not iCloud-synced).
+- **`~/NS.md` is the canonical session memory file**, symlinked to the iCloud version. Update on each major milestone.
+- **TodoWrite items are ephemeral; persist meaningful ones to NS.md § 2** before session end.
+
+---
+
+## 4. Session log (newest first)
+
+### 2026-05-01 (PM) — Memory consolidation: NS.md unified
+- Restructured `~/NS.md` as the firm-wide unified memory file (this restructure).
+- Moved real file to iCloud workspace at `Nick Lawfirm AI/NS.md`; symlinked `~/NS.md` → it (cross-Mac via iCloud).
+- Pulled in sarah-cloud, case_manager, CopyCatch, lawfirm-workspace state into project map (§ 1).
+- Consolidated open todos across all workstreams into § 2 (GFM checkboxes; survives across sessions).
+- Updated `/deploy` slash command + Stop hook to persist current todos back into NS.md before commit.
+- Reverted documented "Sarah polls 1hr" decision — stays at 2 min default. Cost is identical at $7/mo Render Starter, faster polling more useful for time-sensitive court emails.
+
+### 2026-05-01 (AM) — Portal v1 QA round 1
+- Two bugs caught + fixed during Alan's QA:
+  - **CSS not loading**: Firebase Hosting strips trailing slash → relative `./css/portal.css` resolved against parent dir. Fix: absolute paths in HTML.
+  - **Login failing 400 "missing_fields"**: provisioner global `__CASE_ID__` substitution overwrote a JS sentinel string, returning null for caseId. Fix: split-string trick in JS so naive substring substitution can't match.
+- "Download PDF" button → "Download" + filled-violet CTA style per Alan's UX preference.
+- All gates passing end-to-end again. Sarah's polling check confirmed at 2 min (default; never actually changed).
+
+### 2026-04-30 — Bullseyebore portal v1 SHIPPED
+- URL: https://nslegal-ip.com/portals/bullseyebore-26cv03898/
+- Password: `c69sUi3JSEDTwzfY` (regenerates on every provisioner re-run — v2 limitation)
+- 24 defendants, 21 public PDFs (Schedule A Ex 4 excluded)
+- Audit log captures every login/view/download event with IP + UA + session_id
+- 7 verification gates passed (login OK/bad/missing-email, data fetch, public download, deny private, logout, audit)
+- Built: `functions/portal.js`, `public/portals/_template/`, provisioning script at `Nick Law Firm AI/_reference/scripts/provision_portal.js`, storage.rules
+- Created portal-provisioner SA: `portal-provisioner@nick-site-web.iam.gserviceaccount.com`
+- Bucket: `nick-site-web-portal` (custom-named; `*.firebasestorage.app` is Firebase-managed and can't be created directly)
+- Granted Cloud Run runtime SA `roles/iam.serviceAccountTokenCreator` for getSignedUrl signBlob.
+
+### 2026-04-30 — Frank-pattern session-management infra
+- Added `nick-site/.claude/commands/deploy.md` (slash command), `.claude/hooks/on-stop-deploy.sh` (Stop hook with stash/rebase/pop, source-only commit, push-before-deploy, ~/NS.md auto-update), `.claude/settings.local.json` (registers hook + pre-allows ~25 routine commands).
+- Created `~/NS.md` + `nick-site/MEMORY/NS.md` for nick-site-specific memory (now consolidated into firm-wide NS.md).
+
+### 2026-04-30 — Cost structure analysis + reference doc
+- Investigated CopyCatch's $30/mo: copycatch-scan always-on ($13), Hosting bandwidth from copycatch.ai ($14), AR storage ($2.65), misc ($0.50).
+- Saved cost-structure reference doc at `Nick Lawfirm AI/_reference/cost_structure.md`.
+- Decisions log: stay on Firebase, drop original Cloudflare migration plan, single Firebase project for nick-site + portals, Sarah on $7/mo Render Starter for Phase 2 readiness.
+
+### 2026-04-30 — Email volume empirical analysis
+- Analysis script at `Nick Lawfirm AI/_reference/scripts/analyze_admin_inbox.py`.
+- Output at `Nick Lawfirm AI/_reference/email_volume_analysis.md`.
+- Key findings: 231 emails / 90 days, 2.6/day avg, 21 distinct cases (broader than the 6 "active" ones), 30% external (counsel/client/platform legal), 45% court ECF, 33% CC'd to admin@. LLM-classification cost projection: $0.06/mo at current rate.
+
+### 2026-04-29 — A.1 Lockdown + A.2 contact form
+- Closed Firestore rules data leak on /submissions (was `allow read, update: if true` — every submission publicly readable).
+- Deleted public/admin.html (had `const PASSWORD = 'CCQA'` hardcoded in client JS).
+- Deployed locked-down rules; verified with unauth curl returning 403.
+- Built submitContact Cloud Function with validation/honeypot/rate-limit/Slack-webhook/Firestore-tee.
+- Hostingrewrite at `/api/submitContact`. End-to-end verified: form submission → Slack message in #nick-firm + Firestore record. 7/7 gates passed.
+
+---
+
+## 5. Pointers — when you need more depth than this file
+
+| Need | Read |
+|---|---|
+| Lawfirm rules / drafting protocol | `Nick Lawfirm AI/RULES.md` |
+| Cross-session legal-work narrative (cases, drafting, filings) | `Nick Lawfirm AI/SESSIONS.md` |
+| Operational pipeline diagram (sync_clio → ... → upload_to_clio) | `Nick Lawfirm AI/WORKFLOW.md` |
+| Reference docs map (case strategy, judge intel, etc.) | `Nick Lawfirm AI/Nick Law Firm AI/_reference/INDEX.md` |
+| Cost structure + decisions log | `Nick Lawfirm AI/Nick Law Firm AI/_reference/cost_structure.md` |
+| Email-volume empirical baseline | `Nick Lawfirm AI/Nick Law Firm AI/_reference/email_volume_analysis.md` |
+| Sarah architecture / build phases | `Nick Lawfirm AI/sarah-cloud/{README.md, LEARNING_PATH.md}` |
+| Per-client case state | `Nick Lawfirm AI/Clients/{Client}/STATUS.md` |
+| Brand guide (colors / typography / tone) | `Nick Lawfirm AI/nick-site/BRAND-GUIDE.md` |
+| Active engineering plan (the big two-workstream doc) | `~/.claude/plans/i-do-the-own-concurrent-gem.md` |
+| Provision_portal script (one-off; codifies into portal_publish) | `Nick Lawfirm AI/Nick Law Firm AI/_reference/scripts/provision_portal.js` |
+| Inbox analysis script | `Nick Lawfirm AI/Nick Law Firm AI/_reference/scripts/analyze_admin_inbox.py` |
+
+---
+
+## 6. Credentials inventory (locations only — never values in this file)
+
+| Credential | Where it lives | Who/what uses it |
+|---|---|---|
+| Firebase nick-site-web project access | `gcloud auth login` (alan@kozulabs.com) | All firebase / gcloud commands |
+| Render API key | `sarah-cloud/.env` (gitignored) | Querying Sarah's env vars + admin operations |
+| Microsoft Graph creds (admin@nslegal-ip.com) | Render env vars on `srv-d7gq5p8sfn5c73e0m4q0` | Sarah ECF poll + email_volume_analysis script |
+| Clio API tokens | Render env vars + `Nick Law Firm AI/clio_data/token.json` | sync_clio + upload_to_clio + Sarah |
+| Slack bot token (Sarah bot) | Render env vars (`SLACK_BOT_TOKEN`) | Sarah posts to #nick-firm |
+| Slack incoming webhook (contact form) | Firebase Secret Manager (`SLACK_LEADS_WEBHOOK`) | submitContact function |
+| Portal session signing key | Firebase Secret Manager (`PORTAL_SESSION_SECRET`) | portal{Login,Data,Download,Event,Logout} functions |
+| Portal-provisioner SA key | `~/.config/nick-firm-portal-provisioner.json` (mode 600) | provision_portal.js writes Firestore + Storage |
+| GitHub repos | github.com/Kozu-Labs (nick-site), github.com/aldizzle (sarah-cloud) | Source of truth for code |
+
+---
+
+_Last restructure: 2026-05-01 (PM). When this file crosses ~500 lines, archive older session-log entries to `Nick Lawfirm AI/_archive/NS_2026-{Q}.md` and reference back to it._

@@ -1,12 +1,15 @@
 #!/bin/bash
 # on-stop-deploy.sh — runs on Claude Code "Stop" event for nick-site.
-# Workflow: pull → commit source → push → deploy → update ~/NS.md
+# Workflow: pull → commit source → push → deploy → update NS.md
 # Rules: Never deploy before pushing. Never commit build output (public/blog/).
+# Note: ~/NS.md is a symlink to Nick Lawfirm AI/NS.md (iCloud workspace).
+# We resolve the symlink so file edits work.
 
 set -e
 INPUT=$(cat)
 PROJECT_DIR="/Users/alanli/Library/Mobile Documents/com~apple~CloudDocs/Nick Lawfirm AI/nick-site"
-NSMD="$HOME/NS.md"
+NSMD_LINK="$HOME/NS.md"
+NSMD=$(/usr/bin/python3 -c "import os; print(os.path.realpath('$NSMD_LINK'))" 2>/dev/null || echo "$NSMD_LINK")
 
 # 1. Loop prevention: if the hook already fired this stop cycle, let Claude stop.
 if [ "$(echo "$INPUT" | jq -r '.stop_hook_active' 2>/dev/null)" = "true" ]; then
@@ -61,18 +64,34 @@ git push origin main >&2
 # 9. Deploy hosting. (Functions deploy is heavier; trigger via /deploy explicitly when needed.)
 firebase deploy --only hosting >&2
 
-# 10. Append a deploy record to ~/NS.md.
+# 10. Append a deploy record to NS.md (in § 4 Session log).
 COMMIT_SHA=$(git rev-parse --short HEAD)
 COMMIT_MSG=$(git log -1 --pretty=format:'%s' | head -1)
+TS=$(date '+%Y-%m-%d %H:%M')
 
 if [ -f "$NSMD" ]; then
-  # Insert a new "Auto-deploy" entry right after the title (line 1).
-  /usr/bin/sed -i '' "2a\\
-\\
-## Auto-deploy: $(date '+%Y-%m-%d %H:%M')\\
-- Commit: \`$COMMIT_SHA\` — $COMMIT_MSG\\
-- Triggered by: Stop hook
-" "$NSMD"
+  # Use Python for symlink-safe edit. Insert right after the
+  # "## 4. Session log" heading so newest entries stay at top of that section.
+  /usr/bin/python3 - <<PYEOF
+import os, re
+p = "$NSMD"
+content = open(p).read()
+entry = """### Auto-deploy: $TS — \`$COMMIT_SHA\`
+- Commit message: $COMMIT_MSG
+- Triggered by: Stop hook (no Claude narrative captured — for richer context, use /deploy)
+"""
+# Insert immediately after the "## 4. Session log" heading line
+new = re.sub(
+    r"(## 4\. Session log[^\n]*\n[^\n]*\n)",  # heading + the "newest first" caption
+    r"\1\n" + entry + "\n",
+    content,
+    count=1,
+)
+if new == content:
+    # Fallback: section header not found, prepend at very top
+    new = entry + "\n" + content
+open(p, "w").write(new)
+PYEOF
 fi
 
 exit 0
