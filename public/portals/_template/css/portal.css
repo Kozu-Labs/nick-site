@@ -226,14 +226,17 @@ form input:focus {
 .docket-row .col-action { text-align: right; }
 .docket-row .col-action a {
   display: inline-block;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
+  padding: 7px 14px;
+  border: 1px solid var(--violet);
   border-radius: var(--radius-md);
   font-size: 13px;
-  color: var(--violet-2);
-  background: var(--surface-2);
+  font-weight: 600;
+  color: var(--white);
+  background: var(--violet);
+  transition: background 150ms ease, transform 150ms ease;
 }
-.docket-row .col-action a:hover { background: var(--violet); color: var(--white); border-color: var(--violet); }
+.docket-row .col-action a:hover { background: #7050ff; border-color: #7050ff; }
+.docket-row .col-action a:active { transform: translateY(1px); }
 .docket-row .col-action span.no-doc { color: var(--muted); font-size: 12px; font-style: italic; }
 
 @media (max-width: 720px) {

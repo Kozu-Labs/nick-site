@@ -7,7 +7,11 @@
 
   function getCaseId() {
     const meta = document.querySelector('meta[name="portal-case-id"]');
-    return (meta && meta.content && meta.content !== '__CASE_ID__') ? meta.content : null;
+    if (!meta || !meta.content) return null;
+    // The placeholder string is split below so the provisioner's __CASE_ID__
+    // substitution never matches inside this file.
+    const placeholder = '__' + 'CASE_ID' + '__';
+    return meta.content === placeholder ? null : meta.content;
   }
 
   function fmtDate(s) {
@@ -125,7 +129,7 @@
       row.className = 'docket-row';
       const entryLabel = d.sub_no ? `${String(d.entry_no).padStart(2, '0')}-${String(d.sub_no).padStart(2, '0')}` : String(d.entry_no);
       const action = d.is_public && d.doc_key
-        ? `<a href="/api/portal/download?doc=${encodeURIComponent(d.doc_key)}" data-doc-key="${encodeURIComponent(d.doc_key)}" data-track="download">Download PDF</a>`
+        ? `<a href="/api/portal/download?doc=${encodeURIComponent(d.doc_key)}" data-doc-key="${encodeURIComponent(d.doc_key)}" data-track="download">Download</a>`
         : '<span class="no-doc">no document attached</span>';
       row.innerHTML = `
         <div class="col-entry">Dkt ${entryLabel}</div>
