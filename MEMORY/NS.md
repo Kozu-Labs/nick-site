@@ -46,13 +46,15 @@ The umbrella initiative is **Nick's Law Firm AI** — using AI to make a small I
    │        (v2 fix needed: --keep-password flag).
    │
    ├── sarah-cloud (firm operations bot)
-   │     Live:       Render service srv-d7gq5p8sfn5c73e0m4q0
+   │     Live:       GitHub Actions daily workflow (`ECF to Slack`)
+   │     Standby:    Render service srv-d7gq5p8sfn5c73e0m4q0 is suspended
    │     Repo:       github.com/aldizzle/sarah-cloud
-   │     Function:   polls admin@nslegal-ip.com via Microsoft Graph every 2 min,
+   │     Function:   polls admin@nslegal-ip.com via Microsoft Graph once each
+   │                 weekday morning, with manual workflow_dispatch available;
    │                 parses ECF docket emails, posts structured messages to
    │                 Slack #nick-firm channel
    │     Phase:      1 done (email→Slack). 2 in roadmap (interactive @Sarah).
-   │     Cost:       $7/mo Render Starter
+   │     Cost:       $0 while Render remains suspended
    │
    ├── case_manager (lawfirm action board)
    │     Lives in:   Nick Law Firm AI/_reference/skills/case_manager/
@@ -89,6 +91,12 @@ Use GFM checkboxes. Open `[ ]` carries forward; closed `[x]` is history.
 - [x] A.4 Portal architecture (5 Cloud Functions + audit log + brand-matched UI)
 - [x] A.4.1 Audit log layer (login/view/download events to per-defendant subcollection)
 - [x] A.6 Bullseyebore portal v1 SHIPPED at nslegal-ip.com/portals/bullseyebore-26cv03898/
+- [x] Publish the Nick authority/inbound growth plan and cross-site trust architecture
+- [ ] Ratify the homepage category, primary attorney-referral CTA, and sourced credentials registry with Nick
+- [ ] Run a 60-minute Nick authority interview and approve the first public matter/content set
+- [ ] Fix the broken Insights route and sitemap; add source-safe funnel attribution
+- [ ] Complete the narrow Clio C0 schema-only inventory before requesting any matter metadata
+- [ ] Run the Nick-site visual-direction bake-off only after copy and proof inputs are approved
 - [ ] A.5 Codify what worked into `portal_publish` workspace skill (sibling to notify_defendants)
 - [ ] A.4.2 `portal_audit` skill — generate per-defendant service-of-process reports
 - [ ] Portal v2: `--keep-password` flag on provisioner (idempotent re-runs)
@@ -98,6 +106,7 @@ Use GFM checkboxes. Open `[ ]` carries forward; closed `[x]` is history.
 
 ### sarah-cloud / docket-driven cascade
 
+- [x] B.0 Cost cutover — daily GitHub Actions ECF→Slack workflow live; Render worker suspended (2026-06-07)
 - [ ] B.1 Active-case registry (`Nick Lawfirm AI/_active_cases.json` + Firestore mirror + activate/deactivate CLI)
 - [ ] B.2 Mac-side launchd auto-poll cascade (sync_clio → emit-json → push → portal_publish per active case)
 - [ ] B.3 Cloud-side ECF receipt log in Firestore (per-case ecf_receipts subcollection)
@@ -161,9 +170,32 @@ These are decisions the team has made; respect them across sessions.
 - **`~/NS.md` is the canonical session memory file**, symlinked to the iCloud version. Update on each major milestone.
 - **TodoWrite items are ephemeral; persist meaningful ones to NS.md § 2** before session end.
 
+### Growth and public positioning
+
+- **Nicholas Lee is the cross-site trust anchor; CopyCatch is capability proof.** Attorney and IP-owner marketing should establish Nick's sourced practitioner authority before relying on product claims.
+- **CopyCatch and Nick's legal practice are separate but connected.** CopyCatch provides monitoring and organized factual records; legal services require conflicts review and a separate engagement.
+- **Use Nick's exact public relationship as `Co-founder and IP litigator`.** Do not imply that every CopyCatch result has received attorney review.
+- **Review provenance must remain explicit.** `CopyCatch reviewed`, `Ready for counsel`, and `Attorney reviewed` are separate states; the last requires a named reviewer, date, and auditable event.
+- **Do not use a disclaimer to reverse a misleading net impression.** Headlines, portraits, CTAs, output labels, and nearby disclosures must communicate one coherent relationship.
+
 ---
 
 ## 4. Session log (newest first)
+
+### 2026-07-13 — Nick authority and inbound growth architecture
+- Audited the live `nslegal-ip.com` site, public repository, Firebase/contact foundation, current information architecture, structured data, crawl behavior, and lead path. Confirmed material growth gaps: one mixed-audience page, product-first trust sequencing, broken Insights route, missing sitemap, no useful attribution, and unsupported performance/court-ready language requiring a claims registry.
+- Created `docs/nick-authority-inbound-growth-plan.md`, a decision-ready plan covering attorney and IP-owner ICPs, Nick-first positioning, CopyCatch and monitoring-product boundaries, P0/P1 page architecture, authority content, AI-citation/SEO, narrow Clio research controls, segmented intake, analytics, design, team roles, and launch acceptance criteria.
+- Locked the trust relationship: Nick is presented as CopyCatch `Co-founder and IP litigator`; his legal practice and CopyCatch are separate but connected; Nick is the authority anchor while CopyCatch is factual capability proof. Public/client UX must never imply that every output is legal advice or attorney-reviewed.
+- Sent a sanitized adversarial review to the dedicated CC/Fable chat. No client names, Clio material, private cases, research mechanics, credentials, or fee arrangements were shared.
+- This release is planning and memory only. The public site and portal behavior were not redesigned or changed.
+
+### 2026-06-07 — Sarah cost cutover to free GitHub Actions
+- Sarah ECF→Slack moved off the always-on Render background worker and onto GitHub Actions (`.github/workflows/ecf-to-slack.yml`) in `github.com/aldizzle/sarah-cloud`.
+- Pushed commits: `7547231` added business-hours/stateless dedupe support; `92262a7` switched the deployment target to daily GitHub Actions and removed the Render cron blueprint.
+- Copied Sarah's existing Render env vars into GitHub Actions repo secrets after Alan approval; no secret values recorded here.
+- Manually dispatched workflow run `27101219889`; completed successfully. Because this ran on Sunday, it verified Actions/dependency/secret wiring and exited via the business-hours guard.
+- Suspended Render worker `srv-d7gq5p8sfn5c73e0m4q0`; Render API reports `suspended`.
+- Residual local note: `/Users/alan/Documents/NickFirmAI/sarah-cloud` still has an unrelated uncommitted `sarah/clio_client.py` change from before this session; it was intentionally left out of the Sarah cost-cutover commits.
 
 ### 2026-05-01 (PM) — Memory consolidation: NS.md unified
 - Restructured `~/NS.md` as the firm-wide unified memory file (this restructure).
