@@ -1,8 +1,8 @@
 # Nicholas Lee Authority Site and Inbound Growth System
 
-**Version:** 1.1
+**Version:** 1.2
 **Date:** 2026-07-13
-**Status:** Proposed for Alan, Nick, Frank, and Fable review
+**Status:** Fable reviewed; proposed for Alan, Nick, and Frank ratification
 **Scope:** Growth, positioning, content, SEO/AI discovery, lead intake, product boundaries, design, and execution planning. No production redesign is authorized by this document.
 
 ## Executive Decision
@@ -11,9 +11,9 @@ For both the attorney and IP-owner ICPs, **Nicholas Lee is the trust anchor and 
 
 Attorneys receiving a cold introduction are unlikely to trust a software brand before they trust the practitioner behind it. Nick's site should therefore become the primary authority and relationship channel for attorney referrals. It must establish, in this order:
 
-1. Nick is a practicing IP litigator with a specific Schedule A and marketplace-enforcement specialty.
+1. Nick is a practicing IP litigator with a focused Schedule A and marketplace-enforcement practice.
 2. He understands the case economics and evidentiary work because he has handled the matters himself.
-3. He co-founded CopyCatch to scale that specialist operating method.
+3. He co-founded CopyCatch to scale that practitioner-informed operating method.
 4. A referring attorney can send a potential matter and receive a fast, bounded assessment of whether deeper investigation is warranted.
 
 CopyCatch should not compete with Nick's authority. It should borrow and reinforce it until the product has enough independently verified customer proof to carry more trust on its own.
@@ -35,7 +35,7 @@ Legal representation, product use, and managed investigation must remain distinc
 
 ## Why This Is the Highest-Leverage Move
 
-The recent attorney referral validates the channel. The attorney did not ask to operate a dashboard. He approached a specialist, supplied a proposed product family and technical materials, and asked whether Nick could assist. The winning experience is therefore not "try our software." It is:
+The recent attorney referral validates the channel. The attorney did not ask to operate a dashboard. He approached an experienced practitioner, supplied a proposed product family and technical materials, and asked whether Nick could assist. The winning experience is therefore not "try our software." It is:
 
 > Send Nick the opportunity. Nick and CopyCatch assess the live market surface. Receive a clear recommendation for the next investigative step.
 
@@ -62,7 +62,7 @@ flowchart LR
 ### What is already useful
 
 - The custom domain is live and Nick's name is indexed.
-- Nick's portrait, 20-plus-year practitioner identity, and CopyCatch founder connection are visible.
+- Nick's portrait, practitioner identity, and CopyCatch co-founder connection are visible.
 - The contact form is functional, rate-limited, stored in Firestore, and routed to the firm Slack channel.
 - Basic `Attorney` and `LegalService` structured data exists.
 - The site avoids traditional legal stock imagery.
@@ -71,7 +71,7 @@ flowchart LR
 ### Material gaps
 
 1. **The site is one generic page.** It cannot establish topical authority for Schedule A, patent enforcement, attorney referrals, or marketplace-scale infringement.
-2. **The trust sequence is backwards.** CopyCatch performance language appears before enough public, verifiable evidence of Nick's specialist experience.
+2. **The trust sequence is backwards.** CopyCatch performance language appears before enough public, verifiable evidence of Nick's relevant practice experience.
 3. **Audience journeys are mixed.** A referring attorney and a patent owner get the same generic form and CTA.
 4. **The “Insights” navigation link returns 404.** This damages credibility and blocks the intended authority engine.
 5. **`robots.txt` points to a missing sitemap.** `/sitemap.xml` returns 404.
@@ -87,11 +87,11 @@ flowchart LR
 
 **Patent enforcement and Schedule A litigation for marketplace-scale infringement.**
 
-Patent enforcement is the wedge. Schedule A is the specialist mechanism and attorney-referral hook. Trademark and copyright enforcement remain visible adjacent capabilities, but they should not dilute the first-screen specialty.
+Patent enforcement is the wedge. Schedule A is the focused mechanism and attorney-referral hook. Trademark and copyright enforcement remain visible adjacent capabilities, but they should not dilute the first-screen practice focus.
 
 ### Core positioning statement
 
-> Nicholas Lee is an IP litigator focused on patent enforcement and Schedule A matters involving marketplace-scale infringement. He combines more than two decades of legal practice with CopyCatch, the investigative system he built to turn a broad marketplace problem into an organized factual record for counsel.
+> Nicholas Lee is an IP litigator focused on patent enforcement and Schedule A matters involving marketplace-scale infringement. He combines his legal practice with CopyCatch, the investigative system he co-founded to turn a broad marketplace problem into an organized factual record for counsel.
 
 This is working language, not final public copy. Every factual clause must pass the claims and credentials registry.
 
@@ -134,12 +134,28 @@ Use three distinct output states wherever review provenance matters:
 | State | Meaning | Public/client rule |
 |---|---|---|
 | `CopyCatch reviewed` | CopyCatch completed its operational quality process | May describe process completion; never imply legal approval |
-| `Ready for counsel` | A factual record or package is organized for legal review | Preferred handoff language |
+| `Ready for counsel` | A factual record or package passed the future promotion and quality gates | Do not render until those gates exist as auditable product events |
 | `Attorney reviewed` | A named attorney reviewed that exact output | Show only when supported by reviewer identity, date, and an auditable event |
+
+These labels are contract-derived, not copy tokens. The live product currently supports only `CopyCatch reviewed`. `Ready for counsel` stays unavailable until the promotion/quality gate exists, and `Attorney reviewed` stays unavailable until a per-output attorney-review event is recorded against an immutable revision. Templates must not hard-code any of the three.
 
 Recommended relationship disclosure near enforcement CTAs:
 
 > CopyCatch provides marketplace monitoring and organized factual records. It does not provide legal advice. Legal services, if requested, require conflicts review and a separate engagement.
+
+### Standing advertising-compliance gate
+
+Every Nick-site page, and every CopyCatch page using Nick's name, portrait, credentials, or practice description, must pass a per-page pre-publication review. The gate covers:
+
+- credentials, admissions, practice history, and title;
+- specialization or expertise language;
+- representative matters and past-result implications;
+- performance, cost, timing, evidence, and output claims;
+- the visual relationship between Nick, his firm, and CopyCatch;
+- the attorney-client and conflicts boundary; and
+- jurisdiction-specific disclosures or filing requirements.
+
+Growth owns the source registry and checklist. Nick or a designated legal reviewer owns approval. Material copy or layout changes reopen the gate; an approval does not carry forward automatically.
 
 ## Priority ICPs and Jobs
 
@@ -149,7 +165,7 @@ Recommended relationship disclosure near enforcement CTAs:
 
 **Questions the site must answer:**
 
-- Does Nick actually specialize in this kind of matter?
+- Does Nick have relevant experience with this kind of matter?
 - Can he quickly evaluate whether the market opportunity justifies deeper work?
 - What should I send him?
 - Will he respect the referring relationship?
@@ -171,6 +187,8 @@ Recommended relationship disclosure near enforcement CTAs:
 
 **Primary CTA:** `Evaluate my matter`
 
+Owner intake begins with one routing question: `Do you have an active dispute or counsel involved?` An active matter stays in the law-practice conflicts path. Monitoring-only demand visibly exits the law-practice context and moves to CopyCatch. Any later enforcement re-entry requires fresh consent and a new conflicts check; no owner data moves silently between the two.
+
 ### ICP 3: Monitoring-first IP owners
 
 **Trigger:** Recurring or episodic suspected copying creates a need for ongoing monitoring or a one-time scan.
@@ -191,33 +209,33 @@ Recommended relationship disclosure near enforcement CTAs:
 
 | Route | Job | Primary CTA |
 |---|---|---|
-| `/` | Establish Nick's authority, specialty, method, and two main audiences | Discuss a referral |
+| `/` | Establish Nick's authority, practice focus, method, and two main audiences | Discuss a referral |
 | `/for-attorneys` | Explain the referral/collaboration pathway and what to send | Discuss a referral |
-| `/patent-enforcement` | Address patent-owner and patent-counsel enforcement questions | Evaluate my matter |
-| `/schedule-a-litigation` | Own the specialist category and explain the process without promising outcomes | Discuss a matter |
+| `/schedule-a-litigation` | Own the focused category and explain the process without promising outcomes | Discuss a matter |
 | `/about` | Present source-backed credentials, career narrative, and CopyCatch origin | Contact Nick |
-| `/copycatch` | Explain how Nick's practice informed the managed investigation capability | Explore CopyCatch |
+| `/copycatch` | Bridge to the separate company: what it is, why Nick co-founded it, and the boundary | Explore CopyCatch |
 | `/contact` | Route attorney, owner, and monitoring inquiries through separate light paths | Send inquiry |
-| `/insights` | Provide a real, crawlable authority hub | Read insights |
 
 ### P1 expansion pages
 
 | Route | Purpose |
 |---|---|
+| `/patent-enforcement` | Add only after the Schedule A and homepage content establish enough distinct owner demand |
 | `/e-commerce-ip-enforcement` | Connect patents, trademarks, and copyrights to marketplace enforcement |
 | `/trademark-enforcement` | Expansion service page after Nick approves scope and claims |
 | `/copyright-enforcement` | Expansion service page after Nick approves scope and claims |
 | `/representative-matters` | Source-backed public matter experience, subject to client and ethics review |
 | `/insights/[slug]` | Practitioner-authored answer pages and case perspectives |
+| `/insights` | Add to navigation only after at least three approved substantive pieces are live |
 | `/referral-received` | Private-feeling confirmation with response expectations and next steps |
 
 ### Navigation principle
 
 Do not expose every product or practice area in top navigation. Recommended top-level navigation:
 
-`Experience` · `For Attorneys` · `Patent Enforcement` · `Insights` · `About` · `Contact`
+`For Attorneys` · `Schedule A` · `About` · `Contact`
 
-CopyCatch should appear as a prominent proof section and contextual link, not as the organizing category for Nick's legal authority site.
+CopyCatch should appear as corroborating capability in the second viewport and on the bridge page, not as the organizing category or a first-viewport product pitch.
 
 ## Homepage First-Viewport Specification
 
@@ -238,28 +256,30 @@ Recommended structure:
 - Secondary CTA: `Evaluate a matter`
 - Real portrait, not an abstract AI visual.
 - A visible hint of the next authority-proof section on desktop and mobile.
+- No CopyCatch logo, screenshot, performance claim, or dark-technology framing in the first viewport.
+- CopyCatch first appears in the second viewport as one sourced origin line linking to the bridge page.
 
 Do not lead with software metrics, dashboards, “AI-powered,” or generic “IP litigation and strategy.”
 
 Attorney-facing CopyCatch pages should use a parallel first-viewport trust pattern:
 
-- Product category or offer remains the H1.
-- A visible co-founder line names Nick as an IP litigator.
-- Nick's portrait or compact authority profile appears in the first viewport or immediately below it.
+- The managed-service category or offer remains the H1.
+- A visually separate provenance block names Nick as `Co-founder · practicing IP litigator` and links to his authority profile.
+- Nick's portrait appears inside that provenance block, never adjacent to output imagery or a specific record.
 - The operative sentence describes factual monitoring, investigation, or organized records.
-- A nearby link opens Nick's sourced authority profile.
-- The legal-services boundary appears before or with the first enforcement-escalation action, not only in the footer.
+- The legal-services boundary sits immediately below the Nick block and before the first enforcement-escalation action.
+- The block describes origin, not ongoing firm supervision or per-output attorney review.
 
 ## Authority Proof Stack
 
 Build trust through verifiable layers, in this order:
 
 1. **Identity and credentials:** bar status, education, practice history, court admissions, and current firm role.
-2. **Specific specialty:** Schedule A, patent enforcement, marketplace-scale investigation, and pre-filing decision support.
+2. **Specific practice focus:** Schedule A, patent enforcement, marketplace-scale investigation, and pre-filing decision support.
 3. **Public matter experience:** selected public dockets and procedural facts, only after Nick approves wording.
 4. **Practitioner method:** how an inbound opportunity is assessed, scoped, investigated, and prepared for counsel.
 5. **Original analysis:** useful, sourced writing answering questions actual attorneys and IP owners ask.
-6. **CopyCatch:** the system Nick built to scale the research and documentation burden he encountered in practice.
+6. **CopyCatch:** the system Nick co-founded to scale the research and documentation burden encountered in enforcement work.
 
 Do not substitute testimonials, invented case counts, generic badges, or unverified outcome claims for this stack.
 
@@ -307,7 +327,7 @@ Titles are research hypotheses. Nick must approve the legal premise and final an
 
 ### Technical discovery requirements
 
-- Repair `/blog` by replacing it with the real `/insights` hub and redirects.
+- Remove or redirect the broken `/blog` navigation path immediately. Launch the real `/insights` hub only when at least three approved pieces are live.
 - Generate a valid XML sitemap and submit it through Search Console.
 - Explicitly allow `OAI-SearchBot` if AI-search discovery is desired. Decide separately whether to allow `GPTBot` training access.
 - Add canonical URLs, breadcrumbs, Article schema, Person schema, and accurate Attorney/LegalService data.
@@ -395,11 +415,10 @@ The existing form captures name, contact information, a broad persona, and free 
 
 ### P0 intake model
 
-Create three short entry paths:
+Create two short entry paths plus one owner-routing branch:
 
 1. `Attorney referral`
-2. `IP owner matter`
-3. `Monitoring inquiry`
+2. `Owner inquiry` -> `active matter / counsel involved` or `monitoring only`
 
 Shared minimum fields:
 
@@ -410,7 +429,7 @@ Shared minimum fields:
 - IP type;
 - rights identifier, optional;
 - one representative public product or source link, optional;
-- concise nonconfidential summary;
+- a structured, concise nonconfidential summary;
 - preferred next step; and
 - consent to the privacy notice.
 
@@ -419,6 +438,8 @@ Show before the message field:
 > Please do not send confidential information. Submitting this form does not create an attorney-client relationship.
 
 Final wording requires Nick's legal approval.
+
+The pre-conflicts form must not request accused-party names, confidential communications, litigation strategy, nonpublic evidence, or detailed factual narratives. Conflicts review is the first stated step. The monitoring branch must make the transition out of the law-practice context explicit; enforcement re-entry requires fresh consent.
 
 ### Routing and lifecycle
 
@@ -483,11 +504,11 @@ Analytics must never receive free-text inquiry content, rights identifiers, prod
 
 ### Design objective
 
-The site should feel like a premium specialist practice with unusual technical depth, not a CopyCatch product subpage and not a conventional law-firm template.
+The site should feel like a premium focused practice with unusual technical depth, not a CopyCatch product subpage and not a conventional law-firm template.
 
 ### Recommended design principles
 
-- Nick's name, portrait, and specialty are first-viewport signals.
+- Nick's name, portrait, and approved practice focus are first-viewport signals.
 - Use real practitioner, public-record, and investigative-work visuals where authorized.
 - Share disciplined typography and precision with CopyCatch, but do not make violet or “AI” the dominant identity.
 - Favor a balanced light/dark system or a brighter authority-led canvas over an endless black page.
@@ -580,29 +601,39 @@ Raw Clio data, client files, credentials, and research-agent operating details d
 
 ## Execution Roadmap
 
-### Now: Authority and conversion foundation
+### Days 0-30: Truth cleanup and conversion structure
 
-1. Ratify Nick-first positioning and cross-site roles.
-2. Create a source-backed credentials and public-claims registry.
-3. Correct or remove unsupported CopyCatch performance language.
-4. Repair the broken Insights and sitemap surfaces.
-5. Approve P0 information architecture and CTA system.
-6. Conduct a 60-minute Nick authority interview focused on Schedule A referrals, patent-enforcement patterns, and what makes an opportunity worth examining.
-7. Run Clio Phase C0 schema inventory, not a data dump.
-8. Produce homepage, attorney-referral, and patent-enforcement copy decks.
-9. Run the Claude Design bake-off.
-10. Implement segmented intake, attribution, privacy language, Search Console, and conversion events.
+1. Ratify the Nick-first category and cross-site roles.
+2. Create the source-backed credentials, claims, and per-page advertising-compliance gate.
+3. Delete unsupported performance, profitability, and `court-ready` language rather than qualifying it.
+4. Launch the six-page P0 architecture and keep CopyCatch out of Nick's first viewport.
+5. Fix navigation and sitemap behavior; do not add an empty Insights navigation item.
+6. Implement CTA attribution, the conflicts-safe owner-routing question, and nonconfidential structured intake.
+7. Conduct the Nick authority interview and run Clio Phase C0 schema inventory only.
 
-### Next: Evidence-backed authority engine
+**Falsifier:** Five uninvolved IP litigators view the homepage for 15 seconds. If any describes Nick primarily as a software founder, cannot identify the Schedule A/patent-enforcement practice focus, or recalls an unsupported performance claim, the phase fails.
 
-1. Complete Clio aggregate taxonomy and Nick-approved matter sampling.
-2. Verify selected experience against public records.
-3. Launch `/insights` with three cornerstone articles, not an empty hub.
-4. Publish the attorney referral and Schedule A cornerstone pages.
-5. Add representative public matters only after approval.
-6. Add a Nick authority module and backlink on attorney-facing CopyCatch pages.
-7. Connect lead routing to the selected CRM/Clio workflow after conflicts and consent are designed.
-8. Establish monthly content review using actual inbound questions and qualified-lead data.
+### Days 31-60: Authority proof and the CopyCatch bridge
+
+1. Verify and approve the `/about` credentials and practice narrative.
+2. Launch `/copycatch` as a boundary-first bridge page, not a product pitch.
+3. Add the visually separate Nick provenance module to attorney-facing CopyCatch pages.
+4. Keep only the event-supported `CopyCatch reviewed` label; sweep all public/client templates for the unreleased states.
+5. Complete the owner routing and fresh-consent enforcement re-entry behavior.
+6. Run the Claude Design bake-off and implement the approved responsive system.
+
+**Falsifier:** Cold readers view the attorney-facing CopyCatch page and answer `Who reviewed these records?` Any answer of `Nick` or `his firm`, absent a real per-output review event, fails the phase. Any shipped `Ready for counsel` or `Attorney reviewed` string also fails.
+
+### Days 61-90: Evidence-gated authority engine
+
+1. Complete the narrow Clio aggregate taxonomy and Nick-selected sample.
+2. Verify every publishable experience fact against public records.
+3. Publish two or three Nick-authored cornerstone pieces; add `/insights` to navigation only after three are live.
+4. Add `/patent-enforcement` only if the approved content is distinct from the homepage and Schedule A page.
+5. Review lead attribution and qualified-conversation data before expanding the IA.
+6. Add representative matters only after public-record corroboration and per-page legal approval.
+
+**Falsifier:** Trace every factual statement in one published insight to an approved credential source, public record, or clearly labeled practitioner opinion. One statement sourced only to raw client data or to no evidence fails the phase and stops the publishing pipeline.
 
 ### Later: Product-led monitoring and escalation loop
 
@@ -617,16 +648,18 @@ Raw Clio data, client files, credentials, and research-agent operating details d
 
 The first redesign is ready to launch only when:
 
-- a skeptical referring attorney can identify Nick's specialty within five seconds;
+- a skeptical referring attorney can identify Nick's practice focus within five seconds;
 - the attorney and owner journeys have distinct pages, CTAs, and confirmation copy;
+- CopyCatch does not appear in Nick's first viewport and appears first as corroborating origin/capability;
 - every credential, metric, result, and product claim has a source and approval state;
+- every Nick-site page and Nick-bearing CopyCatch page has a current advertising-compliance approval;
 - no confidential Clio or client data enters public content or design tooling;
-- `/insights`, `/sitemap.xml`, canonical tags, and structured data validate;
+- `/sitemap.xml`, canonical tags, and structured data validate; `/insights` stays out of navigation until three approved pieces are live;
 - desktop and mobile routes have no overflow, overlap, or hidden primary actions;
-- the contact form warns against confidential submissions and preserves source attribution;
+- the contact form blocks premature confidential detail, begins with conflicts review, and preserves source attribution;
 - analytics exclude sensitive fields;
 - CopyCatch visibly connects to Nick's practitioner authority on attorney-facing surfaces;
-- a visitor can accurately distinguish `CopyCatch reviewed`, `Ready for counsel`, and `Attorney reviewed` without assuming legal approval;
+- only event-supported review labels render; unreleased `Ready for counsel` and `Attorney reviewed` states do not appear in templates;
 - product monitoring, managed investigation, and legal engagement remain distinct; and
 - Firebase portal routes and functions regress cleanly after the marketing-site rebuild.
 
@@ -649,27 +682,21 @@ Locked and removed from the open-decision list:
 - CopyCatch and Nick's legal practice are separate but connected.
 - Nick is the cross-site trust anchor; CopyCatch remains the factual capability proof.
 
-## Fable Review Brief
+## Fable Review Outcome
 
-When this plan is ready for independent review, provide Fable only:
+Fable reviewed a sanitized version of this plan in the dedicated CC chat. No Clio exports, client names, confidential files, agent mechanics, credentials, or fee arrangements were shared.
 
-- this plan;
-- a screenshot or public URL of the current homepage;
-- sanitized descriptions of the attorney-referral and patent-owner archetypes;
-- public CopyCatch positioning canon; and
-- no Clio exports, client names, confidential files, agent mechanics, credentials, or fee arrangements.
+Accepted recommendations:
 
-Ask Fable to challenge:
+1. Add a standing per-page attorney-advertising compliance gate rather than a one-time claims cleanup.
+2. Separate Nick-as-origin visually from product outputs so his portrait and title do not imply firm supervision or per-record review.
+3. Keep CopyCatch out of Nick's first viewport and make `/copycatch` a boundary-first bridge page.
+4. Render review labels only from real events and expose only the currently supported `CopyCatch reviewed` state.
+5. Replace separate owner doors with a conflicts-safe routing question, explicit context exit, and fresh-consent enforcement re-entry.
+6. Reduce P0 to six pages and hold the Insights hub until three approved pieces exist.
+7. Use falsifying attorney/reader tests at 30, 60, and 90 days instead of relying on internal design approval.
 
-1. whether Nick-first positioning is decisive enough for attorney trust;
-2. whether the three-channel ecosystem creates confusion;
-3. whether the P0 information architecture matches high-intent demand;
-4. whether the authority proof stack is credible without overclaiming;
-5. whether the Clio protocol is narrow enough;
-6. which three pages are most likely to generate qualified referrals first; and
-7. what should be cut before design and implementation.
-
-Fable's output is advisory. Growth and Tech should adopt only recommendations supported by the operating model, verified user behavior, current contracts, and claims rules.
+Growth independently accepted these changes because they follow from the observed referral path, current product contracts, existing site audit, and the net-impression rule. The review did not reopen managed-service positioning, pricing, product claims, or unverified experience language.
 
 ## Primary References
 

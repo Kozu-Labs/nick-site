@@ -175,7 +175,7 @@ These are decisions the team has made; respect them across sessions.
 - **Nicholas Lee is the cross-site trust anchor; CopyCatch is capability proof.** Attorney and IP-owner marketing should establish Nick's sourced practitioner authority before relying on product claims.
 - **CopyCatch and Nick's legal practice are separate but connected.** CopyCatch provides monitoring and organized factual records; legal services require conflicts review and a separate engagement.
 - **Use Nick's exact public relationship as `Co-founder and IP litigator`.** Do not imply that every CopyCatch result has received attorney review.
-- **Review provenance must remain explicit.** `CopyCatch reviewed`, `Ready for counsel`, and `Attorney reviewed` are separate states; the last requires a named reviewer, date, and auditable event.
+- **Review provenance must remain explicit and event-derived.** Only `CopyCatch reviewed` is supported today. `Ready for counsel` requires the future promotion/quality gate; `Attorney reviewed` requires a named reviewer, date, immutable revision, and auditable event.
 - **Do not use a disclaimer to reverse a misleading net impression.** Headlines, portraits, CTAs, output labels, and nearby disclosures must communicate one coherent relationship.
 
 ---
@@ -186,7 +186,7 @@ These are decisions the team has made; respect them across sessions.
 - Audited the live `nslegal-ip.com` site, public repository, Firebase/contact foundation, current information architecture, structured data, crawl behavior, and lead path. Confirmed material growth gaps: one mixed-audience page, product-first trust sequencing, broken Insights route, missing sitemap, no useful attribution, and unsupported performance/court-ready language requiring a claims registry.
 - Created `docs/nick-authority-inbound-growth-plan.md`, a decision-ready plan covering attorney and IP-owner ICPs, Nick-first positioning, CopyCatch and monitoring-product boundaries, P0/P1 page architecture, authority content, AI-citation/SEO, narrow Clio research controls, segmented intake, analytics, design, team roles, and launch acceptance criteria.
 - Locked the trust relationship: Nick is presented as CopyCatch `Co-founder and IP litigator`; his legal practice and CopyCatch are separate but connected; Nick is the authority anchor while CopyCatch is factual capability proof. Public/client UX must never imply that every output is legal advice or attorney-reviewed.
-- Sent a sanitized adversarial review to the dedicated CC/Fable chat. No client names, Clio material, private cases, research mechanics, credentials, or fee arrangements were shared.
+- Completed a sanitized adversarial review in the dedicated CC/Fable chat. Adopted the standing advertising-compliance gate, Nick-as-origin visual separation, second-viewport CopyCatch placement, event-derived review labels, conflicts-safe owner routing, six-page P0, and falsifying 30/60/90 tests. No client names, Clio material, private cases, research mechanics, credentials, or fee arrangements were shared.
 - This release is planning and memory only. The public site and portal behavior were not redesigned or changed.
 
 ### 2026-06-07 — Sarah cost cutover to free GitHub Actions
