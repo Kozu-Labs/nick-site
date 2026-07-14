@@ -123,8 +123,9 @@ a {
 
 .brand-name {
   font-family: var(--display);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 560;
+  white-space: nowrap;
 }
 
 .brand-role {
@@ -361,9 +362,10 @@ p {
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(320px, 4fr);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 330px);
   gap: clamp(48px, 7vw, 104px);
   align-items: center;
+  justify-content: space-between;
 }
 
 .hero-copy {
@@ -407,6 +409,9 @@ p {
 }
 
 .portrait-figure {
+  width: 100%;
+  max-width: 330px;
+  justify-self: end;
   margin: 0;
   padding: 16px;
   border: 1px solid var(--line);
@@ -414,10 +419,9 @@ p {
 }
 
 .portrait-figure img {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  object-position: center 18%;
+  width: calc(100% - 24px);
+  height: auto;
+  margin: 0 auto;
   filter: none;
 }
 
@@ -1132,7 +1136,8 @@ p {
 
   .portrait-figure {
     order: 2;
-    max-width: 460px;
+    max-width: 320px;
+    justify-self: center;
   }
 
   .page-hero .page-index {
@@ -1179,7 +1184,7 @@ p {
   }
 
   .brand-name {
-    font-size: 20px;
+    font-size: clamp(15px, 4.3vw, 18px);
   }
 
   .hero {
@@ -1209,7 +1214,12 @@ p {
   }
 
   .portrait-figure {
+    width: min(78vw, 280px);
     padding: 10px;
+  }
+
+  .portrait-figure img {
+    width: calc(100% - 16px);
   }
 
   .credential-grid {
