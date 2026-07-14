@@ -282,3 +282,10 @@ These are decisions the team has made; respect them across sessions.
 ---
 
 _Last restructure: 2026-05-01 (PM). When this file crosses ~500 lines, archive older session-log entries to `Nick Lawfirm AI/_archive/NS_2026-{Q}.md` and reference back to it._
+
+### 2026-07-13 — Nicholas Lee authority site shipped
+- Rebuilt and deployed `nslegal-ip.com` as a six-page authority-first inbound channel: Home, For Attorneys, Schedule A Litigation, About, CopyCatch bridge, and Contact. The page sequence makes Nicholas Lee the trust anchor and positions CopyCatch as separate factual-investigation capability rather than implied legal oversight.
+- Final visual system is the Annotated Practice direction. The header wordmark is `The Law Office of Nicholas Lee`. The approved glasses portrait was recovered exactly from historical Firebase Hosting version `a13722686c04447a`, deployed at 1080x1350 with SHA-256 `ed2134b249eb2b87b8b205a5043dbf73767677bd75b6ef8dcc76d956c6fa6caa`, and rendered uncropped at a restrained 330px desktop / 280px mobile frame.
+- Source is synchronized on `main` through commit `3ac9cb6`. Firebase project `nick-site-web`, hosting target `nick-site`, serves `https://nslegal-ip.com` and `https://nick-site-web.web.app`.
+- QA passed across desktop and mobile with zero horizontal overflow. All public routes, SEO/AI files, and assets return 200; missing routes return 404; portal routes remain noindex. The existing contact-to-Slack integration returned 200 for labeled QA submission `xtdDwB4xhkQwJ3XUPvKV`, with no Slack-post failure in function logs.
+- Nick/legal still needs to verify all credentials and approve `docs/marketing/attorney-advertising-prepublication-checklist.md`. Clio-derived results or insight content remains deferred pending access plus legal approval.
