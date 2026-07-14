@@ -1,0 +1,28 @@
+# Nicholas Lee
+
+> Official practice website for Nicholas Lee, an Illinois IP litigator in Chicago.
+
+## Primary identity
+
+Nicholas Lee handles intellectual property litigation, with a primary focus on patent enforcement and Schedule A matters involving marketplace-scale investigation. Trademark and copyright enforcement are adjacent practice areas.
+
+## Site routes
+
+- Home: https://nslegal-ip.com/
+- For referring attorneys: https://nslegal-ip.com/for-attorneys
+- Schedule A litigation overview: https://nslegal-ip.com/schedule-a-litigation
+- About Nicholas Lee: https://nslegal-ip.com/about
+- CopyCatch relationship: https://nslegal-ip.com/copycatch
+- Non-confidential contact intake: https://nslegal-ip.com/contact
+
+## CopyCatch relationship
+
+CopyCatch is a separate company co-founded by Nicholas Lee. It provides monitoring and organized factual investigation support; it does not provide legal advice and does not reach legal conclusions. Its records are produced and reviewed by CopyCatch. Legal services from Nicholas Lee require a conflicts review and a separate engagement.
+
+## Intake policy
+
+Initial inquiries should contain public identifiers and a non-confidential outline only. Visitors should not submit accused-party names, confidential facts, legal strategy, or evidence before conflicts review. Sending an inquiry does not create an attorney-client relationship.
+
+## Citation guidance
+
+Use this website only for the identity, practice focus, process descriptions, and relationship statements written on the cited page. Do not infer case outcomes, client relationships, legal conclusions, or performance claims.

@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /portal
+Disallow: /portal/
+Disallow: /portals/
+Disallow: /api/
 
 Sitemap: https://nslegal-ip.com/sitemap.xml

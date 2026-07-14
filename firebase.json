@@ -9,6 +9,28 @@
     ],
     "cleanUrls": true,
     "trailingSlash": false,
+    "headers": [
+      {
+        "source": "/portal/**",
+        "headers": [
+          { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
+        ]
+      },
+      {
+        "source": "/portals/**",
+        "headers": [
+          { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          { "key": "X-Content-Type-Options", "value": "nosniff" },
+          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+          { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+        ]
+      }
+    ],
     "rewrites": [
       { "source": "/api/submitContact",  "function": { "functionId": "submitContact",  "region": "us-central1" } },
       { "source": "/api/portal/login",    "function": { "functionId": "portalLogin",    "region": "us-central1" } },
