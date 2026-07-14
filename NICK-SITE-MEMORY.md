@@ -290,3 +290,12 @@ The website doesn't exist in isolation. Here's what else is live or being built:
 ## Session Log
 - **March 9, 2026 (Claude Code)**: Initial setup — created GitHub repo (Kozu-Labs/nick-site), Firebase project (nick-site-web), hosting target (nick-site), placeholder page.
 - **March 9, 2026 (Cowork)**: Wrote comprehensive site brief with practice areas, origin story, brand guide reference, content strategy, two-audience framework, and site structure recommendations. All content finalized for Claude Code to build from.
++
+### 2026-07-13 — Claude-assisted authority-site UX polish
+- A full live-site critique was run in the dedicated Claude/Fable CC thread across the homepage, attorney funnel, Schedule A and IP practice pages, Insights, About, CopyCatch boundary, and Contact. Recommendations were treated as advisory: the release accepted only changes supported by the live site and current positioning.
+- High-merit changes shipped: the disconnected homepage datum line and `01` marker are suppressed on mobile; text links use a clean arrow-led treatment without underlines; Schedule A is elevated into primary navigation and listed first in the footer practice hierarchy; all three published notes are exposed in the footer.
+- Copy now uses practitioner language: “matter,” “question,” “first look,” and “focused public-record review” replace “opportunity,” “market-surface assessment,” “bounded assessment,” and other product/operations jargon. The About page’s first-person voice is consistent.
+- Deferred rather than guessed: attorney bylines, admission dates, ARDC/profile links, results, representative matters, performance language, and any “expert” or specialization claim. Those remain Nick/legal approval items.
+- Release commit `331f7ac` (`Polish Nicholas Lee authority site`) is pushed to synchronized `main` and deployed to Firebase Hosting target `nick-site` in project `nick-site-web`.
+- Live QA at `https://nslegal-ip.com` passed at 390px and 1440px: no horizontal overflow, one H1, correct cache-versioned stylesheet, clean mobile hero, uncropped portrait, Schedule A navigation, no text-link underlines, no console errors, and all fourteen public routes return `200`. A static link audit checked 385 internal links with zero failures.
+- The Slack contact function, Firebase function rewrites, private portal, and form submission behavior were not changed or re-tested because this release was public content/CSS only.
