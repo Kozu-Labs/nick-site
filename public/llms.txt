@@ -4,13 +4,21 @@
 
 ## Primary identity
 
-Nicholas Lee handles intellectual property litigation, with a primary focus on patent enforcement and Schedule A matters involving marketplace-scale investigation. Trademark and copyright enforcement are adjacent practice areas.
+Nicholas Lee handles intellectual property litigation, with a primary focus on patent enforcement and Schedule A matters involving marketplace-scale investigation. The practice also addresses trademark and copyright enforcement where the right, online pattern, and proposed legal role fit.
 
 ## Site routes
 
 - Home: https://nslegal-ip.com/
 - For referring attorneys: https://nslegal-ip.com/for-attorneys
+- Patent infringement and enforcement: https://nslegal-ip.com/patent-enforcement
+- Trademark infringement and enforcement: https://nslegal-ip.com/trademark-infringement
+- Copyright infringement and enforcement: https://nslegal-ip.com/copyright-infringement
+- Amazon IP enforcement: https://nslegal-ip.com/amazon-ip-enforcement
 - Schedule A litigation overview: https://nslegal-ip.com/schedule-a-litigation
+- Practice notes: https://nslegal-ip.com/insights
+- Schedule A is not automatic: https://nslegal-ip.com/insights/schedule-a-is-not-automatic
+- What to send an IP enforcement lawyer: https://nslegal-ip.com/insights/what-to-send-an-ip-enforcement-lawyer
+- Marketplace investigation before filing: https://nslegal-ip.com/insights/marketplace-investigation-before-filing
 - About Nicholas Lee: https://nslegal-ip.com/about
 - CopyCatch relationship: https://nslegal-ip.com/copycatch
 - Non-confidential contact intake: https://nslegal-ip.com/contact

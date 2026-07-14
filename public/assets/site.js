@@ -52,7 +52,12 @@
   const contactForm = document.querySelector('[data-contact-form]');
   const monitoringExit = document.querySelector('[data-monitoring-exit]');
   const formRoute = document.querySelector('[data-form-route]');
+  const formRegarding = document.querySelector('[data-form-regarding]');
   const formRole = document.querySelector('[data-role-select]');
+
+  if (formRegarding) {
+    formRegarding.value = new URLSearchParams(window.location.search).get('regarding') || '';
+  }
 
   if (routeInputs.length) {
     const requestedRoute = new URLSearchParams(window.location.search).get('route');
@@ -123,6 +128,7 @@
       status.textContent = 'Sending your inquiry securely…';
 
       const route = String(formData.get('inquiry_route') || 'unknown');
+      const regarding = String(formData.get('regarding') || '').trim();
       const company = String(formData.get('company') || '').trim();
       const role = String(formData.get('role') || '').trim();
       const jurisdiction = String(formData.get('jurisdiction') || '').trim();
@@ -135,6 +141,7 @@
         role ? `Role: ${role}` : '',
         jurisdiction ? `Jurisdiction: ${jurisdiction}` : '',
         registrations ? `Public patent / registration numbers: ${registrations}` : '',
+        regarding ? `Regarding: ${regarding}` : '',
         `Page source: ${pageSource}`,
         '',
         messageText,
@@ -165,6 +172,7 @@
 
         contactForm.reset();
         if (formRoute) formRoute.value = route;
+        if (formRegarding) formRegarding.value = regarding;
         if (message && counter) counter.textContent = `0 / ${message.maxLength}`;
         status.classList.add('success');
         status.textContent = 'Request received. Nick will review it after the conflicts check.';
