@@ -282,6 +282,7 @@ p {
   color: var(--green-deep);
   font-size: 15px;
   font-weight: 600;
+  text-decoration: none;
 }
 
 .text-link::after {
@@ -294,7 +295,11 @@ p {
 }
 
 .text-link:hover::after {
-  transform: translateX(4px);
+  transform: translateX(3px);
+}
+
+.text-link:hover {
+  color: var(--green);
 }
 
 .button {
@@ -1467,7 +1472,16 @@ p {
   }
 
   .hero-title {
-    padding-bottom: 20px;
+    padding-bottom: 0;
+  }
+
+  .hero-title::after,
+  .hero-annotation::before {
+    display: none;
+  }
+
+  .hero-annotation {
+    gap: 0;
   }
 
   .hero-title h1,
