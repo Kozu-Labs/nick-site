@@ -14,6 +14,7 @@ const { defineSecret } = require('firebase-functions/params');
 const { setGlobalOptions } = require('firebase-functions/v2');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
+const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-enterprise');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -29,6 +30,10 @@ exports.portalEvent = portal.portalEvent;
 exports.portalLogout = portal.portalLogout;
 
 const SLACK_LEADS_WEBHOOK = defineSecret('SLACK_LEADS_WEBHOOK');
+const RECAPTCHA_PROJECT_ID = 'nick-site-web';
+const RECAPTCHA_SITE_KEY = '6LdhZVotAAAAAAJvVQ6WNVKbgh1SuBLP-tKWec4q';
+const RECAPTCHA_ACTION = 'CONTACT';
+const recaptchaClient = new RecaptchaEnterpriseServiceClient();
 
 // CORS allowlist. Add subdomains as portals come online.
 const ALLOWED_ORIGINS = new Set([
@@ -36,6 +41,13 @@ const ALLOWED_ORIGINS = new Set([
   'https://www.nslegal-ip.com',
   'https://nick-site-web.web.app',
   'https://nick-site-web.firebaseapp.com',
+]);
+
+const ALLOWED_RECAPTCHA_HOSTS = new Set([
+  'nslegal-ip.com',
+  'www.nslegal-ip.com',
+  'nick-site-web.web.app',
+  'nick-site-web.firebaseapp.com',
 ]);
 
 const RATE_LIMIT_COUNT = 5;             // submissions per IP per hour
@@ -92,6 +104,38 @@ function clientIp(req) {
 
 function hashIp(ip) {
   return crypto.createHash('sha256').update(ip).digest('hex').slice(0, 24);
+}
+
+async function verifyRecaptcha(token, ip, userAgent) {
+  if (typeof token !== 'string' || token.length < 20 || token.length > 4096) {
+    return { valid: false, reason: 'missing_or_malformed' };
+  }
+
+  const [assessment] = await recaptchaClient.createAssessment({
+    parent: recaptchaClient.projectPath(RECAPTCHA_PROJECT_ID),
+    assessment: {
+      event: {
+        token,
+        siteKey: RECAPTCHA_SITE_KEY,
+        expectedAction: RECAPTCHA_ACTION,
+        userIpAddress: ip,
+        userAgent,
+      },
+    },
+  });
+
+  const properties = assessment.tokenProperties || {};
+  if (!properties.valid) {
+    return { valid: false, reason: properties.invalidReason || 'invalid_token' };
+  }
+  if (properties.action !== RECAPTCHA_ACTION) {
+    return { valid: false, reason: 'action_mismatch' };
+  }
+  if (!ALLOWED_RECAPTCHA_HOSTS.has(properties.hostname)) {
+    return { valid: false, reason: 'hostname_mismatch' };
+  }
+
+  return { valid: true };
 }
 
 /**
@@ -184,6 +228,22 @@ exports.submitContact = onRequest(
     const { errors, cleaned } = validate(body);
     if (errors.length > 0) {
       return res.status(400).json({ error: 'validation_failed', details: errors });
+    }
+
+    if (!body.recaptchaToken) {
+      return res.status(400).json({ error: 'captcha_required' });
+    }
+
+    let captcha;
+    try {
+      captcha = await verifyRecaptcha(body.recaptchaToken, ip, ua);
+    } catch (err) {
+      console.error('[recaptcha_assessment_failed]', err);
+      return res.status(503).json({ error: 'verification_unavailable' });
+    }
+    if (!captcha.valid) {
+      console.warn(`[recaptcha_rejected] reason=${captcha.reason} ip_hash=${hashIp(ip)}`);
+      return res.status(403).json({ error: 'captcha_failed' });
     }
 
     const limit = await checkRateLimit(ip);

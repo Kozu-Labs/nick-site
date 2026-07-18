@@ -97,6 +97,14 @@
   if (contactForm) {
     const submitButton = contactForm.querySelector('button[type="submit"]');
     const status = contactForm.querySelector('[data-form-status]');
+    const captchaField = contactForm.querySelector('[data-captcha-field]');
+
+    const captchaApi = () => window.grecaptcha && window.grecaptcha.enterprise;
+
+    const resetCaptcha = () => {
+      const api = captchaApi();
+      if (api && typeof api.reset === 'function') api.reset();
+    };
 
     contactForm.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -120,6 +128,20 @@
           ? 'Enter a valid email address.'
           : 'Please complete the required fields.';
         firstInvalid.focus();
+        return;
+      }
+
+      const api = captchaApi();
+      const recaptchaToken = api && typeof api.getResponse === 'function'
+        ? api.getResponse()
+        : '';
+
+      if (!recaptchaToken) {
+        status.classList.add('error');
+        status.textContent = api
+          ? 'Complete the verification before sending.'
+          : 'Verification is still loading. Please wait a moment and try again.';
+        if (captchaField) captchaField.focus();
         return;
       }
 
@@ -154,6 +176,7 @@
         type: route === 'attorney' ? 'Attorney referral or collaboration' : 'IP owner — active matter',
         message: context.slice(0, 2000),
         website: String(formData.get('website') || ''),
+        recaptchaToken,
       };
 
       try {
@@ -166,11 +189,18 @@
         if (response.status === 429) {
           throw new Error('rate_limited');
         }
+        if (response.status === 400 || response.status === 403) {
+          const errorBody = await response.json().catch(() => ({}));
+          if (errorBody.error === 'captcha_required' || errorBody.error === 'captcha_failed') {
+            throw new Error('captcha_failed');
+          }
+        }
         if (!response.ok) {
           throw new Error('service_error');
         }
 
         contactForm.reset();
+        resetCaptcha();
         if (formRoute) formRoute.value = route;
         if (formRegarding) formRegarding.value = regarding;
         if (message && counter) counter.textContent = `0 / ${message.maxLength}`;
@@ -178,10 +208,13 @@
         status.textContent = 'Request received. Nick will review it after the conflicts check.';
         submitButton.textContent = 'Request received';
       } catch (error) {
+        resetCaptcha();
         status.classList.add('error');
         status.textContent = error.message === 'rate_limited'
           ? 'Too many requests were sent from this connection. Please try again later.'
-          : 'The request could not be sent. Please email nslee@nslegal-ip.com.';
+          : error.message === 'captcha_failed'
+            ? 'Verification expired or could not be confirmed. Please try again.'
+            : 'The request could not be sent. Please email nslee@nslegal-ip.com.';
         submitButton.disabled = false;
         submitButton.textContent = 'Send inquiry';
       }
